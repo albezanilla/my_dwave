@@ -101,12 +101,30 @@ def face_configurations(face):
     return variable_name_tuple, valid_states
 
 
+def print_valid_configurations(vars, states):
+    for var in vars:
+        print('  %8s' % var, end='')
+    print()
+
+    for var in vars:
+        print('  %8s' % '--------', end='')
+    print('')
+
+    for state in states:
+        for bit in state:
+            print('  %8d' % bit, end='')
+        print('')
+
 if __name__ == '__main__':
     if len(sys.argv) == 2:
-        ci = int(sys.argv[1])
-        bc = boolean_configurations(ci)
-        for valid_configuration in bc:
-            print(valid_configuration)
+        if sys.argv[1][0:4] == 'cube':
+            cube_index = int(sys.argv[1][4])
+            variables, valid_states = cube_configurations(cube_index)
+        else:
+            face = sys.argv[1][0]
+            variables, valid_states = face_configurations(face)
+        print_valid_configurations(variables, valid_states)
+        
     else:
-        print('Usage: cubes.py {1|2|3|4}')
+        print('Usage: ii.py {cube1|cube2|cube3|cube4|up|down|front|back}')
         sys.exit(1)
