@@ -37,7 +37,7 @@ if len(sys.argv) == 4:
         symbol_names, valid_states = ii.face_configurations(face)
         aux_names = [face + '_aux_' + '%d' % i for i in range(num_aux_vars)]
 
-    print('\n**************** valid states ****************\n')
+    print('\n**************** Valid states ****************\n')
     for symbol_name in symbol_names:
         print('  %8s' % symbol_name, end='')
     print('')
@@ -99,7 +99,7 @@ if len(sys.argv) == 4:
     # generate the QUBO:
     subqubo = subising.subs(spin_to_qubo)
 
-    # Expand the QUBO so we are left with a sum of products:
+    # Expand the QUBO so we are left with as a sum of products:
     subqubo = subqubo.expand()
 
     print('\n**************** QUBO for %s ****************\n' % arg)
@@ -111,7 +111,6 @@ if len(sys.argv) == 4:
     filename = '%s.ocean.pickle' % (sys.argv[1])
     with open(filename, 'wb') as f:
         pickle.dump(subqubo, f, pickle.HIGHEST_PROTOCOL)
-
     
 else:
     print(usage_message)
