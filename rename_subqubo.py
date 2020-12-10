@@ -17,7 +17,7 @@
 import pickle
 import sys
 import sympy
-import deqo
+import sympy_util
 
 usage_message = 'usage: rename_subqubo.py {up|down|front|back} {up|down|front|back}'
 
@@ -36,7 +36,7 @@ try:
         expr = pickle.load(in_f)
 
     rename_sym_dict = dict()
-    all_vars = deqo.all_vars_from_poly(expr)
+    all_vars = sympy_util.poly_vars(expr)
     for var in all_vars:
         trans_var = var.name.replace(input[0] + '_', output[0] + '_')
         rename_sym_dict[var] = sympy.symbols(trans_var)
