@@ -26,7 +26,7 @@ if len(sys.argv) == 2:
         symbols = tuple(sympy.symbols(face_vars))
         aux = face + '_aux_'
 
-    print('\n**************** valid states ****************\n')
+    print('\n**************** Valid states ****************\n')
     for symbol in symbols:
         print('  %8s' % symbol, end='')
     print('')
@@ -47,10 +47,6 @@ if len(sys.argv) == 2:
 
     print('\n**************** Auxiliary variables ****************\n')
     print(A)
-
-    min_valid, max_valid, min_invalid = deqo.check_qubo(symbols, valid_states, Q)
-    print('\n**************** validation ****************\n')
-    print('min_valid_obj = %d ; max_valid_obj = %d ;  min_invalid_obj = %d' % (min_valid, max_valid, min_invalid))
 
     filename = '%s.deqo.pickle' % (arg)
     with open(filename, 'wb') as f:
