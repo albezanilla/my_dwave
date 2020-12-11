@@ -8,7 +8,14 @@ cube2 = {'-Y' : 'red'  , '+Z' : 'white', '+Y' : 'red'  , '-Z' : 'blue' , '-X' : 
 cube3 = {'-Y' : 'green', '+Z' : 'blue' , '+Y' : 'white', '-Z' : 'green', '-X' : 'red'  , '+X' : 'white'}
 cube4 = {'-Y' : 'white', '+Z' : 'red'  , '+Y' : 'blue' , '-Z' : 'white', '-X' : 'green', '+X' : 'red'  }
 
+# In the following encoding of colors as bits, the first value is 'lo' and the second is 'hi':
+
 color_code = {'red' : [0, 0], 'white' : [0, 1], 'blue' : [1, 0], 'green' : [1, 1]}
+
+def bits_to_color(lo, hi):
+    for color, bits in color_code.items():
+        if [lo, hi] == bits:
+            return color
 
 
 def rotation_by_pi_over_2_around_x(cube):
@@ -73,7 +80,7 @@ def generate_valid_states(cube):
 def cube_configurations(ci):
     cube_names = 'ABCD'
     
-    variable_name_tuple = [cube_names[ci-1] + '_' + face + '_' + bit for face in 'fubd' for bit in ['hi', 'lo']]
+    variable_name_tuple = [cube_names[ci-1] + '_' + face + '_' + bit for face in 'fubd' for bit in ['lo', 'hi']]
 
     if ci == 1:
         cube = cube1
@@ -91,7 +98,7 @@ def cube_configurations(ci):
 
 
 def face_configurations(face):
-    variable_name_tuple = [cube + '_' + face + '_' + bit for cube in 'ABCD' for bit in ['hi', 'lo']]
+    variable_name_tuple = [cube + '_' + face + '_' + bit for cube in 'ABCD' for bit in ['lo', 'hi']]
     valid_states = set()
     for t in itertools.product([0,1], repeat=8):
         L = [t[0] + 2*t[1], t[2] + 2*t[3], t[4] + 2*t[5], t[6] + 2*t[7]]
