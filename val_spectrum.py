@@ -54,13 +54,13 @@ if len(sys.argv) == 3 and sys.argv[1] in methods and sys.argv[2] in subqubos:
     
     for state in valid_states:
         print(state, '       ', end='')
-        h = valid_states_hist[state]
+        h, aux_var_values = valid_states_hist[state]
         for obj in range(0, valid_obj_limit):
             if obj in h:
                 print('%4d' % h[obj], end='')
             else:
                 print('    ', end='')
-        print()
+        print(aux_var_values)
             
 
     print('\n***** Invalid states *****')
