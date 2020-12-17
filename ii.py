@@ -63,8 +63,23 @@ def apply_switches(cube, switches):
         rotation_by_pi_over_2_around_z(cube)
 
 
+def interpret_switches(switches):
+    rotations = []
+    if switches[0]:
+        rotations.append('Z:pi/2')
+    if switches[1]:
+        rotations.append('X:pi')
+    if switches[2]:
+        rotations.append('X:pi/2')
+    if switches[3]:
+        rotations.append('Z:pi')
+    if switches[4]:
+        rotations.append('Z:pi/2')
+    return rotations
+        
+    
 def generate_valid_states(cube):
-    V = set()
+    rotations_for_valid_states = dict()
     for s in itertools.product([True, False], repeat=5):
         cube_copy = copy.copy(cube)
         apply_switches(cube_copy, s)
@@ -73,11 +88,14 @@ def generate_valid_states(cube):
         valid_state += color_code[cube_copy['+Z']]
         valid_state += color_code[cube_copy['-X']]
         valid_state += color_code[cube_copy['-Z']]
-        V.add(tuple(valid_state))
-    return V
+        if tuple(valid_state) in rotations_for_valid_states:
+            rotations_for_valid_states[tuple(valid_state)].append(s)
+        else:
+            rotations_for_valid_states[tuple(valid_state)] = [s]
+    return rotations_for_valid_states
 
 
-def cube_configurations(ci):
+def cube_configurations(ci, include_rotations=False):
     cube_names = 'ABCD'
     
     variable_name_tuple = [cube_names[ci-1] + '_' + face + '_' + bit for face in 'fubd' for bit in ['lo', 'hi']]
@@ -94,7 +112,12 @@ def cube_configurations(ci):
         print('cube must be 1, 2, 3 or 4')
         quit()
 
-    return variable_name_tuple, (generate_valid_states(cube))
+    valid_state_rotations = generate_valid_states(cube)
+
+    if include_rotations:
+        return variable_name_tuple, valid_state_rotations
+    else:
+        return variable_name_tuple, set(valid_state_rotations.keys())
 
 
 def face_configurations(face):
@@ -108,30 +131,97 @@ def face_configurations(face):
     return variable_name_tuple, valid_states
 
 
-def print_valid_configurations(vars, states):
-    for var in vars:
-        print('  %8s' % var, end='')
+def print_valid_configurations(vars, states, rotations=None, output='colors'):
+
+    # Print the list of variables to be displayed:
+
+    if output in {'bits', 'both'}:
+        for var in vars:
+            print('  %8s' % var, end='')
+
+    if output in {'colors', 'both'}:
+        for var in vars:
+            if var.endswith('_hi'):
+                print('  %8s' % var.replace('_hi', ''), end='')
+
     print()
 
-    for var in vars:
-        print('  %8s' % '--------', end='')
-    print('')
+
+    # Print a separator line of dashes:
+
+    if output in {'bits', 'both'}:
+        for var in vars:
+            print('  %8s' % '--------', end='')
+
+    if output in {'colors', 'both'}:
+        for var in vars:
+            if var.endswith('_hi'):
+                print('  %8s' % '--------', end='')
+
+    print()
+
+
+    # Print the states:
 
     for state in states:
-        for bit in state:
-            print('  %8d' % bit, end='')
-        print('')
+        if output in {'bits', 'both'}:
+            for bit in state:
+                print('  %8d' % bit, end='')
+
+        if output in {'colors', 'both'}:
+            colors = [bits_to_color(state[i], state[i+1]) for i in range(0, 8, 2)]
+            for color in colors:
+                print('  %8s' % color, end='')
+
+        if rotations is not None:
+            for rotation in rotations[state]:
+                print(' ', interpret_switches(rotation), end='')
+
+        print()
+
+
 
 if __name__ == '__main__':
+    try:
+        sys.argv.remove('-rotations')
+        do_rotations = True
+    except ValueError:
+        do_rotations = False
+
+    output = 'bits'
+    
+    try:
+        sys.argv.remove('-colors')
+        output = 'colors'
+    except ValueError:
+        pass
+    
+    try:
+        sys.argv.remove('-both')
+        output = 'both'
+    except ValueError:
+        pass
+    
+    if do_rotations and sys.argv[1][0:4] != 'cube':
+        print('error: optional argument -rotations is only valid with cube1...cube4')
+        sys.exit(1)
+        
     if len(sys.argv) == 2:
         if sys.argv[1][0:4] == 'cube':
             cube_index = int(sys.argv[1][4])
-            variables, valid_states = cube_configurations(cube_index)
+            if do_rotations:
+                variables, valid_state_rotations = cube_configurations(cube_index, include_rotations=True)
+            else:
+                variables, valid_states = cube_configurations(cube_index)
         else:
             face = sys.argv[1][0]
             variables, valid_states = face_configurations(face)
-        print_valid_configurations(variables, valid_states)
+
+        if do_rotations:
+            print_valid_configurations(variables, set(valid_state_rotations.keys()), valid_state_rotations, output=output)
+        else:
+            print_valid_configurations(variables, valid_states, output=output)
         
     else:
-        print('Usage: ii.py {cube1|cube2|cube3|cube4|up|down|front|back}')
+        print('Usage: ii.py [-rotations] [-colors|-both] {cube1|cube2|cube3|cube4|up|down|front|back} ')
         sys.exit(1)
