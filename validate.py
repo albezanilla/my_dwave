@@ -66,7 +66,9 @@ def spectrum(sym_tuple, v_states, qubo):
                 this_state_hist[obj] += 1
             else:
                 this_state_hist[obj] = 1
-        valid_states_hist[state] = this_state_hist
+            if obj == 0:
+                ground_state_aux_vars = aux_substitutions
+        valid_states_hist[state] = (this_state_hist, ground_state_aux_vars)
 
     # For each invalid state, compute the objective for all possible settings
     # of the logical and auxiliary variables and save the entire set of objective
