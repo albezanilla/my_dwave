@@ -17,9 +17,24 @@
 # representation are displayed.  Optionally, specify a single command
 # line argument of 'bits', 'colors' or 'both' to select the display
 # format.
+#
+# This program can also write out a pickle file containing the answers
+# to the puzzle.  To do this, edit the program and set the
+# write_answers variable True and run the program.  When write_answers
+# is False, no pickle file will be written.  The format of the pickle
+# file is a list of length eight - each entry in the list corresponds
+# to a single answer to the puzzle.  Each entry is a dict mapping the
+# 32 basic variables over which the puzzle is defined to a 0/1 value.
+# The 32 basic variables appear as strings.  The strings are of this
+# form:
+#           {A|B|C|D}_{u|d|f|b}_{lo|hi}
+
+write_answers = False
+filename = 'solve.pickle'
 
 import ii
 import sys
+import pickle
 
 usage_message = 'solve.py [bits|colors|both]'
 
@@ -30,10 +45,15 @@ elif sys.argv[1] in {'bits', 'colors', 'both'}:
 else:
     print(usage_message)
     sys.exit(1)
-    
+
+if write_answers:
+    answers = []
 
 def print_solution(var_vals):
 
+    if write_answers:
+        answers.append(var_vals.copy())
+    
     if answer_format in {'bits', 'both'}:
         print('%s Solution (bits) %s' % ('*' * 40, '*' * 40))
         for face in 'fdbu':
@@ -110,3 +130,7 @@ constraints = get_constraints()
 variable_values = dict()
 
 recurse(constraints, variable_values, 0)
+
+if write_answers:
+    with open(filename, 'wb') as f:
+        pickle.dump(answers, f, pickle.HIGHEST_PROTOCOL)
