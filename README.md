@@ -15,4 +15,4 @@ way to generate QUBOs.
 The top-level function subqubo_deqo.py invokes the DEQO algorithm for one of the eight
 subQUBOs and writes the generated QUBO to a pickle file.  The top-level function
 subqubo_ocean.py uses Ocean to generate an Ising model for one of the eight constraints
-and writes its generated Ising model to a pickle file.
+and writes its generated Ising model to a pickle file.# my_dwave
